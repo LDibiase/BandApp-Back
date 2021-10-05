@@ -1,8 +1,9 @@
 require('dotenv').config();
 const express = require('express');
-const mongoose = require('mongoose');
+const db = require('./db');
 
 const app = express();
+db.configDataBase();
 
 // Enable CORS
 app.use((_, res, next) => {
@@ -31,5 +32,5 @@ app.use('/users', usersRouter);
 
 // Listen from process.env.PORT
 app.listen(process.env.PORT, () =>
-  console.log(`Server started on port: http://localhost:${process.env.PORT}`)
+  console.log(`Server started on port: http://localhost:${process.env.PORT}, DB: ${process.env.DATABASE_URL}`)
 );

@@ -1,11 +1,17 @@
 const express = require('express');
 const router = express.Router();
+const dbService = require('../db')
 
 // REST methods
 
-// GET
-router.get('/', (_, res) => {
-    res.json("TEST")
+// POST
+router.post('/', (req, res) => {
+    const usr = {
+        firstname: req.body.firstname
+    }
+    
+    dbService.getDataBase().ref('users').push(usr)
+    res.json("Post success")
 });
 
 module.exports = router;
