@@ -11,18 +11,18 @@ app.use((_, res, next) => {
   next();
 });
 
-// Connect to DB
-mongoose.connect(process.env.DATABASE_URL, {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
-});
-// .then(() => console.log('MongoDB is connected'))
-// .catch(error => console.log(error));
+// // Connect to DB
+// mongoose.connect(process.env.DATABASE_URL, {
+//   useNewUrlParser: true,
+//   useCreateIndex: true,
+//   useFindAndModify: false,
+// });
+// // .then(() => console.log('MongoDB is connected'))
+// // .catch(error => console.log(error));
 
-const db = mongoose.connection;
-db.on('error', (error) => console.log(error));
-db.once('open', () => console.log('Connection to database established'));
+// const db = mongoose.connection;
+// db.on('error', (error) => console.log(error));
+// db.once('open', () => console.log('Connection to database established'));
 
 app.use(express.json());
 
