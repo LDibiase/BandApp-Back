@@ -14,4 +14,13 @@ router.post('/', (req, res) => {
     res.json("Post success")
 });
 
+// GET (TEST)
+router.get('/', (req, res) => {
+    const usr = {
+        firstname: "USER TEST"
+    }
+    
+    res.json(usr)
+});
+
 module.exports = router;
