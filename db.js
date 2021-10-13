@@ -14,7 +14,10 @@ function configDataBase() {
       databaseURL: process.env.DATABASE_URL
     })
   } else {
-
+    admin.initializeApp({
+      credential: admin.credential.applicationDefault(),
+      databaseURL: process.env.DATABASE_URL
+    })
   }
 }
 
