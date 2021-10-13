@@ -1,13 +1,21 @@
 const admin = require('firebase-admin');
-const serviceAccount = require('./bandapp-607b4-firebase-adminsdk-ta5bx-a88c8b3e9b.json');
+const fs = require('fs');
 
 let db = null;
 
 function configDataBase() {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: process.env.DATABASE_URL
-  })
+
+  if (fs.existsSync('./bandapp-607b4-firebase-adminsdk-ta5bx-a88c8b3e9b.json')) {
+    let rawdata = fs.readFileSync('./bandapp-607b4-firebase-adminsdk-ta5bx-a88c8b3e9b.json');
+    let serviceAccount = JSON.parse(rawdata);
+    
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+      databaseURL: process.env.DATABASE_URL
+    })
+  } else {
+
+  }
 }
 
 function getDataBase() {
