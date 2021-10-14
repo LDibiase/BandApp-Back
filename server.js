@@ -31,6 +31,10 @@ const usersRouter = require('./routes/users');
 app.use('/users', usersRouter);
 
 // Listen from process.env.PORT
+/*
 app.listen(process.env.PORT || 3000, () =>
   console.log(`Server started on port: http://localhost:${process.env.PORT}, DB: ${process.env.DATABASE_URL}`)
 );
+*/
+
+app.listen(process.env.PORT || 5000);
