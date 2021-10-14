@@ -4,6 +4,8 @@ const dbService = require('../db')
 
 // REST methods
 
+// USERS
+
 // POST
 router.post('/', (req, res) => {
     const usr = {
@@ -13,6 +15,14 @@ router.post('/', (req, res) => {
     dbService.getDataBase().ref('users').push(usr)
     res.json("Post success")
 });
+
+// END USERS
+
+// GENRES
+
+
+
+// END GENRES
 
 // GET (TEST)
 router.get('/', (req, res) => {
