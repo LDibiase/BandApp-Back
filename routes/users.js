@@ -11,19 +11,13 @@ const { v4: uuidv4 } = require('uuid');
 router.post('/', (req, res) => {
     const usr = {
         id: uuidv4(),
-        person: {
-            firstname: req.body.firstname,
-            surname: req.body.surname,
-            email: req.body.email,
-            password: req.body.password,
-        },
-        music: {
-            instruments: [],
-            genres: [],
-        },
-        groups: {
-            personId: null,
-        }
+        firstname: req.body.firstname,
+        surname: req.body.surname,
+        email: req.body.email,
+        password: req.body.password,
+        instruments: [],
+        genres: [],
+        groups: [],
     }
     
     dbService.getDataBase().ref('users').push(usr)
@@ -33,10 +27,26 @@ router.post('/', (req, res) => {
 // GET BY EMAIL
 router.get('/:email', (req, res) => {
     const ref = dbService.getDataBase().ref('users');
+    ref.orderByChild('email').equalTo(req.params.email).on('value',  (snap) => {
+        const usr = {
+            firstname: "",
+            surname: "",
+            email: "",
+            instruments: [],
+            genres: [],
+            groups: [],
+        }
 
-    ref.orderByChild('users/person').equalTo(req.params.email).on('child_added', (snapshot) => {
-        res.json(snapshot.key)
-    });
+        for(var key in snap.val()){
+            usr.firstname = snap.val()[key].firstname;
+            usr.surname = snap.val()[key].surname;
+            usr.email = snap.val()[key].email;
+            usr.instruments = snap.val()[key].instruments;
+            usr.genres = snap.val()[key].genres;
+            usr.groups = snap.val()[key].groups;
+        }
+        res.json(usr);
+    })
 });
 
 // END USERS
