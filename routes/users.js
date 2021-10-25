@@ -41,14 +41,14 @@ router.put('/instrument', (req, res) => {
 });
 
 // PUT FRIEND
-router.put('/instrument', (req, res) => {
+router.put('/friend', (req, res) => {
     dbService.getDataBase().ref('users/' + req.body.username + '/friends/' + req.body.friend).push(req.body.friend);
 
     res.json("Put success")
 });
 
 // PUT GENRE
-router.put('/instrument', (req, res) => {
+router.put('/genre', (req, res) => {
     dbService.getDataBase().ref('users/' + req.body.username + '/genres/' + req.body.genre).push(req.body.genre);
 
     res.json("Put success")
