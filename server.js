@@ -18,8 +18,10 @@ app.use(express.json());
 
 const usersRouter = require('./routes/users');
 const genresRouter = require('./routes/genres');
+const instrumentsRouter = require('./routes/instruments');
 app.use('/users', usersRouter);
 app.use('/genres', genresRouter);
+app.use('/instruments', instrumentsRouter);
 
 // Listen from process.env.PORT
 
