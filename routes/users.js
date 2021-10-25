@@ -11,6 +11,7 @@ const { v4: uuidv4 } = require('uuid');
 router.post('/', (req, res) => {
     const usr = {
         id: uuidv4(),
+        username: req.body.username,
         firstname: req.body.firstname,
         surname: req.body.surname,
         email: req.body.email,
@@ -20,42 +21,32 @@ router.post('/', (req, res) => {
         groups: [],
     }
     
-    dbService.getDataBase().ref('users').push(usr)
-    res.json("Post success")
+    dbService.getDataBase().ref('users/' + req.body.username).set(usr);
+    res.json("Post success");
 });
 
-// GET BY EMAIL
-router.get('/:email', (req, res) => {
-    const ref = dbService.getDataBase().ref('users');
-    ref.orderByChild('email').equalTo(req.params.email).on('value',  (snap) => {
-        const usr = {
-            firstname: "",
-            surname: "",
-            email: "",
-            instruments: [],
-            genres: [],
-            groups: [],
-        }
+// PUT
+router.put('/', (req, res) => {
+    const usr = {
+        password: req.body.password,
+    }
+    
+    dbService.getDataBase().ref('users/' + req.body.username).update(usr)
+    res.json("Put success")
+});
 
-        for(var key in snap.val()){
-            usr.firstname = snap.val()[key].firstname;
-            usr.surname = snap.val()[key].surname;
-            usr.email = snap.val()[key].email;
-            usr.instruments = snap.val()[key].instruments;
-            usr.genres = snap.val()[key].genres;
-            usr.groups = snap.val()[key].groups;
-        }
-        res.json(usr);
-    })
+// GET BY USERNAME
+router.get('/:username', (req, res) => {
+    const ref = dbService.getDataBase().ref('users/' + req.params.username);
+
+    ref.on('value', (snapshot) => {
+        res.json(snapshot.val());
+      }, (errorObject) => {
+        console.log('The read failed: ' + errorObject.name);
+      });
 });
 
 // END USERS
-
-// GENRES
-
-
-
-// END GENRES
 
 // GET (TEST)
 router.get('/', (req, res) => {
