@@ -46,6 +46,18 @@ router.get('/:username', (req, res) => {
       });
 });
 
+
+// GET ALL
+router.get('/', (req, res) => {
+    const ref = dbService.getDataBase().ref('users');
+
+    ref.on('value', (snapshot) => {
+        res.json(snapshot.val());
+      }, (errorObject) => {
+        console.log('The read failed: ' + errorObject.name);
+      });
+});
+
 // END USERS
 
 // GET (TEST)

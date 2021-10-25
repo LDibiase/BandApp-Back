@@ -17,7 +17,9 @@ app.use((_, res, next) => {
 app.use(express.json());
 
 const usersRouter = require('./routes/users');
+const genresRouter = require('./routes/genres');
 app.use('/users', usersRouter);
+app.use('/genres', genresRouter);
 
 // Listen from process.env.PORT
 
