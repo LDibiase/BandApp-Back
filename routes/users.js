@@ -179,38 +179,6 @@ async function getUsers(ref) {
 
   return result;
 }
-/*
-// GET USER INSTRUMENTS
-router.get('/:email/instruments', (req, res) => {
-    const ref = dbService.getDataBase().collection('users').doc(req.params.email).collection('instruments').get().then(querySnapshot => {
-      data = querySnapshot.docs.map(doc => doc.data())
-      console.log(data);
-    })
-});
-
-
-// GET USER FRIENDS
-router.get('/:username/friends', (req, res) => {
-    const ref = dbService.getDataBase().ref('users/' + req.params.username + '/friends');
-
-    ref.on('value', (snapshot) => {
-        res.json(snapshot.val());
-      }, (errorObject) => {
-        console.log('The read failed: ' + errorObject.name);
-      });
-});
-
-// GET USER GENRES
-router.get('/:username/genres', (req, res) => {
-    const ref = dbService.getDataBase().ref('users/' + req.params.username + '/genres');
-
-    ref.on('value', (snapshot) => {
-        res.json(snapshot.val());
-      }, (errorObject) => {
-        console.log('The read failed: ' + errorObject.name);
-      });
-});
-*/
 
 // END USERS
 
