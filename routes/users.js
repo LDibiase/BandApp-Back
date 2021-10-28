@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const dbService = require('../db')
 const { v4: uuidv4 } = require('uuid');
+const admin = require('firebase-admin');
 
 // REST methods
 
@@ -11,59 +12,182 @@ const { v4: uuidv4 } = require('uuid');
 router.post('/', (req, res) => {
     const usr = {
         id: uuidv4(),
-        username: req.body.username,
         firstname: req.body.firstname,
         surname: req.body.surname,
         email: req.body.email,
-        password: req.body.password
+        password: req.body.password,
+        instruments: req.body.instruments,
+        friends: req.body.friends,
+        genres: req.body.genres,
+        bio: req.body.bio
     }
     
-    dbService.getDataBase().ref('users/' + req.body.username).set(usr);
+    dbService.getDataBase().collection('users').doc(req.body.email).set(usr);
 
     res.json("Post success");
 });
 
 // PUT CAMBIO CONTRASEÑA
 router.put('/', (req, res) => {
-    const usr = {
-        password: req.body.password,
-    }
     
-    dbService.getDataBase().ref('users/' + req.body.username).update(usr);
+    const userRef = dbService.getDataBase().collection('users').doc(req.body.email);
+    userRef.set({
+      password: req.body.password
+    }, { merge: true })
+
     res.json("Put success")
 });
 
 // PUT INSTRUMENT
 router.put('/instrument', (req, res) => {
-    dbService.getDataBase().ref('users/' + req.body.username + '/instruments/' + req.body.instrument).push(req.body.instrument);
+  
+    const newInstrument = {
+      name: req.body.name,
+      active: true
+    }
+
+    const userRef = dbService.getDataBase().collection('users').doc(req.body.email);
+    userRef.update({
+      instruments: admin.firestore.FieldValue.arrayUnion(newInstrument)
+    })
 
     res.json("Put success")
+});
+
+// DELETE INSTRUMENT
+router.delete('/instrument', (req, res) => {
+
+  const userRef = dbService.getDataBase().collection('users').doc(req.body.email);
+
+  const instrumentToRemove = {
+    name: req.body.name,
+    active: req.body.status
+  }
+  userRef.update({
+    instruments: admin.firestore.FieldValue.arrayRemove(instrumentToRemove)
+  })
+
+  res.json("Delete success")
+})
+
+// PUT INSTRUMENT CHANGE STATUS
+router.put('/instrument/status', (req, res) => {
+
+  const userRef = dbService.getDataBase().collection('users').doc(req.body.email);
+
+  const instrumentToRemove = {
+    name: req.body.name,
+    active: !req.body.status
+  }
+
+  userRef.update({
+    instruments: admin.firestore.FieldValue.arrayRemove(instrumentToRemove)
+  })
+
+  const newInstrument = {
+    name: req.body.name,
+    active: req.body.status
+  }
+
+  userRef.update({
+    instruments: admin.firestore.FieldValue.arrayUnion(newInstrument)
+  })
+
+  res.json("Put success")
 });
 
 // PUT FRIEND
 router.put('/friend', (req, res) => {
-    dbService.getDataBase().ref('users/' + req.body.username + '/friends/' + req.body.friend).push(req.body.friend);
+  const userRef = dbService.getDataBase().collection('users').doc(req.body.email);
+  userRef.update({
+    friends: admin.firestore.FieldValue.arrayUnion(req.body.friend)
+  })
 
-    res.json("Put success")
+  res.json("Put success")
 });
+
+// DELETE FRIEND
+router.delete('/friend', (req, res) => {
+  const userRef = dbService.getDataBase().collection('users').doc(req.body.email);
+  userRef.update({
+    friends: admin.firestore.FieldValue.arrayRemove(req.body.friend)
+  })
+
+  res.json("Delete success")
+})
 
 // PUT GENRE
 router.put('/genre', (req, res) => {
-    dbService.getDataBase().ref('users/' + req.body.username + '/genres/' + req.body.genre).push(req.body.genre);
+  const userRef = dbService.getDataBase().collection('users').doc(req.body.email);
+  userRef.update({
+    genres: admin.firestore.FieldValue.arrayUnion(req.body.genre)
+  })
 
-    res.json("Put success")
+  res.json("Put success")
 });
 
+// DELETE GENRE
+router.delete('/genre', (req, res) => {
+  const userRef = dbService.getDataBase().collection('users').doc(req.body.email);
+  userRef.update({
+    genres: admin.firestore.FieldValue.arrayRemove(req.body.genre)
+  })
+
+  res.json("Delete success")
+})
+
+// GET BY EMAIL
+router.get('/:email', async (req, res) => {
+  const ref = dbService.getDataBase().collection('users').doc(req.params.email);
+
+  const result = await getUserByEmail(ref);
+  res.json(result);
+
+});
+
+async function getUserByEmail(ref) {
+  const doc = await ref.get();
+
+  if (!doc.exists) {
+    return null;
+  } else {
+    return doc.data();
+  }
+}
+
+
+// GET ALL
+router.get('/', async (req, res) => {
+  const ref = dbService.getDataBase().collection('users');
+
+  const result = await getUsers(ref);
+  res.json(result);
+
+});
+
+async function getUsers(ref) {
+  const snapshot = await ref.get();
+  const result = []
+
+  snapshot.forEach(doc => {
+    result.push(
+      {
+        user: doc.id,
+        data: doc.data()
+      })
+  });
+
+  return result;
+}
+/*
 // GET USER INSTRUMENTS
-router.get('/:username/instruments', (req, res) => {
-    const ref = dbService.getDataBase().ref('users/' + req.params.username + '/instruments');
-
-    ref.on('value', (snapshot) => {
-        res.json(snapshot.val());
-      }, (errorObject) => {
-        console.log('The read failed: ' + errorObject.name);
-      });
+router.get('/:email/instruments', (req, res) => {
+    const ref = dbService.getDataBase().collection('users').doc(req.params.email).collection('instruments').get().then(querySnapshot => {
+      data = querySnapshot.docs.map(doc => doc.data())
+      console.log(data);
+    })
 });
+
 
 // GET USER FRIENDS
 router.get('/:username/friends', (req, res) => {
@@ -86,29 +210,7 @@ router.get('/:username/genres', (req, res) => {
         console.log('The read failed: ' + errorObject.name);
       });
 });
-
-// GET BY USERNAME
-router.get('/:username', (req, res) => {
-    const ref = dbService.getDataBase().ref('users/' + req.params.username);
-
-    ref.on('value', (snapshot) => {
-        res.json(snapshot.val());
-      }, (errorObject) => {
-        console.log('The read failed: ' + errorObject.name);
-      });
-});
-
-
-// GET ALL
-router.get('/', (req, res) => {
-    const ref = dbService.getDataBase().ref('users');
-
-    ref.on('value', (snapshot) => {
-        res.json(snapshot.val());
-      }, (errorObject) => {
-        console.log('The read failed: ' + errorObject.name);
-      });
-});
+*/
 
 // END USERS
 

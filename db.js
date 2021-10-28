@@ -11,19 +11,17 @@ function configDataBase() {
     
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
-      databaseURL: process.env.DATABASE_URL
     })
   } else {
     admin.initializeApp({
       credential: admin.credential.applicationDefault(),
-      databaseURL: process.env.DATABASE_URL
     })
   }
 }
 
 function getDataBase() {
   if (db == null) {
-    db = admin.database();
+    db = admin.firestore();
   }
 
   return db;

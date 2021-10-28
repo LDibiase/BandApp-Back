@@ -9,35 +9,56 @@ module.exports = router;
 
 // POST
 router.post('/', (req, res) => {
-    const instrument = {
-        id: uuidv4(),
-        name: req.body.name,
-        description: req.body.description
-    }
-    
-    dbService.getDataBase().ref('instruments/' + req.body.name).set(instrument);
-    res.json("Post success");
+  const instrument = {
+      id: uuidv4(),
+      name: req.body.name,
+      description: req.body.description
+  }
+  
+  dbService.getDataBase().collection('instruments').doc(req.body.name).set(instrument);
+  res.json("Post success");
 });
 
 // GET BY NAME
-router.get('/:name', (req, res) => {
-    const ref = dbService.getDataBase().ref('instruments/' + req.params.name);
+router.get('/:name', async (req, res) => {
+const ref = dbService.getDataBase().collection('instruments').doc(req.params.name);
 
-    ref.on('value', (snapshot) => {
-        res.json(snapshot.val());
-      }, (errorObject) => {
-        console.log('The read failed: ' + errorObject.name);
-      });
+const result = await getInstrumentsByName(ref);
+res.json(result);
+
 });
+
+async function getInstrumentsByName(ref) {
+const doc = await ref.get();
+
+if (!doc.exists) {
+  return null;
+} else {
+  return doc.data();
+}
+}
 
 // GET ALL
-router.get('/', (req, res) => {
-    const ref = dbService.getDataBase().ref('instruments');
+router.get('/', async (req, res) => {
+const ref = dbService.getDataBase().collection('instruments');
 
-    ref.on('value', (snapshot) => {
-        res.json(snapshot.val());
-      }, (errorObject) => {
-        console.log('The read failed: ' + errorObject.name);
-      });
+const result = await getInstruments(ref);
+res.json(result);
+
 });
+
+async function getInstruments(ref) {
+const snapshot = await ref.get();
+const result = []
+
+snapshot.forEach(doc => {
+  result.push(
+    {
+      instrument: doc.id,
+      data: doc.data()
+    })
+});
+
+return result;
+}
 
