@@ -137,8 +137,8 @@ router.delete('/genre', (req, res) => {
   res.json("Delete success")
 })
 
-// GET BY EMAIL AND PASSWORD
-router.get('/login', async (req, res) => {
+// POST BY EMAIL AND PASSWORD
+router.post('/login', async (req, res) => {
   const ref = dbService.getDataBase().collection('users').doc(req.body.email);
 
   const result = await getUserByEmail(ref);
