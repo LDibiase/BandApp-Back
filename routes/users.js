@@ -3,6 +3,7 @@ const router = express.Router();
 const dbService = require('../db')
 const { v4: uuidv4 } = require('uuid');
 const admin = require('firebase-admin');
+const { remoteConfig } = require('firebase-admin');
 
 // REST methods
 
@@ -135,6 +136,29 @@ router.delete('/genre', (req, res) => {
 
   res.json("Delete success")
 })
+
+// GET BY EMAIL AND PASSWORD
+router.get('/login/:email', async (req, res) => {
+  const ref = dbService.getDataBase().collection('users').doc(req.params.email);
+
+  const result = await getUserByEmail(ref);
+
+  if (result != null && req.body.password === result.password) {
+    res.json(result);
+  } else {
+    res.json("Password invalid")
+  }
+});
+
+async function getUserByEmail(ref) {
+  const doc = await ref.get();
+
+  if (!doc.exists) {
+    return null;
+  } else {
+    return doc.data();
+  }
+}
 
 // GET BY EMAIL
 router.get('/:email', async (req, res) => {
