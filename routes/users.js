@@ -138,12 +138,12 @@ router.delete('/genre', (req, res) => {
 })
 
 // GET BY EMAIL AND PASSWORD
-router.get('/login/:email/:password', async (req, res) => {
-  const ref = dbService.getDataBase().collection('users').doc(req.params.email);
+router.get('/login', async (req, res) => {
+  const ref = dbService.getDataBase().collection('users').doc(req.body.email);
 
   const result = await getUserByEmail(ref);
 
-  if (result != null && req.params.password === result.password) {
+  if (result != null && req.body.password === result.password) {
     res.json(result);
   } else {
     res.json("Password invalid")
