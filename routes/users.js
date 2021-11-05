@@ -146,6 +146,7 @@ router.post('/login', async (req, res) => {
   if (result != null && req.body.password === result.password) {
     res.json(result);
   } else {
+    res.statusCode = 401;
     res.json("Password invalid")
   }
 });
