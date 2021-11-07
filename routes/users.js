@@ -22,10 +22,17 @@ router.post('/', (req, res) => {
         genres: req.body.genres,
         bio: req.body.bio
     }
-    
-    dbService.getDataBase().collection('users').doc(req.body.email).set(usr);
 
-    res.json("Post success");
+    const ref = dbService.getDataBase().collection('users').doc(req.body.email);
+    const result = await getUserByEmail(ref);
+
+    if (result != null) {
+      res.statusCode = 401;
+      res.json(result);
+    } else {
+      dbService.getDataBase().collection('users').doc(req.body.email).set(usr);
+      res.json("Post success");
+    }
 });
 
 // PUT CAMBIO CONTRASEÑA
@@ -33,7 +40,10 @@ router.put('/', (req, res) => {
     
     const userRef = dbService.getDataBase().collection('users').doc(req.body.email);
     userRef.set({
-      password: req.body.password
+      firstname: req.body.firstname,
+      surname: req.body.surname,
+      password: req.body.password,
+      bio: req.body.bio
     }, { merge: true })
 
     res.json("Put success")
