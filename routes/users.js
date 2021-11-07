@@ -10,7 +10,7 @@ const { remoteConfig } = require('firebase-admin');
 // USERS
 
 // POST
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
     const usr = {
         id: uuidv4(),
         firstname: req.body.firstname,
@@ -28,10 +28,11 @@ router.post('/', (req, res) => {
 
     if (result != null) {
       res.statusCode = 401;
-      res.json(result);
     } else {
       dbService.getDataBase().collection('users').doc(req.body.email).set(usr);
-      res.json("Post success");
+      userRef = dbService.getDataBase().collection('users').doc(req.body.email);
+      const newUser = await getUserByEmail(userRef);
+      res.json(newUser);
     }
 });
 
