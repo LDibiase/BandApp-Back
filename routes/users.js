@@ -3,7 +3,6 @@ const router = express.Router();
 const dbService = require('../db')
 const { v4: uuidv4 } = require('uuid');
 const admin = require('firebase-admin');
-const { remoteConfig } = require('firebase-admin');
 
 // REST methods
 
@@ -14,13 +13,13 @@ router.post('/', async (req, res) => {
     const usr = {
         id: uuidv4(),
         firstname: req.body.firstname,
-        surname: req.body.surname,
         email: req.body.email,
         password: req.body.password,
         instruments: req.body.instruments,
         friends: req.body.friends,
         genres: req.body.genres,
-        bio: req.body.bio
+        bio: req.body.bio,
+        city: req.body.city
     }
 
     const ref = dbService.getDataBase().collection('users').doc(req.body.email);
@@ -37,17 +36,19 @@ router.post('/', async (req, res) => {
 });
 
 // PUT CAMBIO CONTRASEÑA
-router.put('/', (req, res) => {
+router.put('/', async (req, res) => {
     
     const userRef = dbService.getDataBase().collection('users').doc(req.body.email);
     userRef.set({
       firstname: req.body.firstname,
-      surname: req.body.surname,
       password: req.body.password,
-      bio: req.body.bio
+      bio: req.body.bio,
+      city: req.body.city
     }, { merge: true })
 
-    res.json("Put success")
+    const ref = dbService.getDataBase().collection('users').doc(req.body.email);
+    const result = await getUserByEmail(ref);
+    res.json(result)
 });
 
 // PUT INSTRUMENT
