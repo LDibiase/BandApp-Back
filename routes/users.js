@@ -43,7 +43,8 @@ router.put('/', async (req, res) => {
       firstname: req.body.firstname,
       password: req.body.password,
       bio: req.body.bio,
-      city: req.body.city
+      city: req.body.city,
+      instruments: req.body.instruments
     }, { merge: true })
 
     const ref = dbService.getDataBase().collection('users').doc(req.body.email);
