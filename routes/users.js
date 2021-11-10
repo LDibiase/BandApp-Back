@@ -119,7 +119,7 @@ router.put('/friend', async (req, res) => {
 
   const ref = dbService.getDataBase().collection('users').doc(req.body.email);
   const result = await getUserByEmail(ref);
-  res.json(result)
+  res.json(result.friends);
 });
 
 // DELETE FRIEND
