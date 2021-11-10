@@ -111,13 +111,15 @@ router.put('/instrument/status', (req, res) => {
 });
 
 // PUT FRIEND
-router.put('/friend', (req, res) => {
+router.put('/friend', async (req, res) => {
   const userRef = dbService.getDataBase().collection('users').doc(req.body.email);
   userRef.update({
     friends: admin.firestore.FieldValue.arrayUnion(req.body.friend)
   })
 
-  res.json("Put success")
+  const ref = dbService.getDataBase().collection('users').doc(req.body.email);
+  const result = await getUserByEmail(ref);
+  res.json(result)
 });
 
 // DELETE FRIEND
