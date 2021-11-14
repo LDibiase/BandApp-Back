@@ -19,7 +19,8 @@ router.post('/', async (req, res) => {
         friends: req.body.friends,
         genres: req.body.genres,
         bio: req.body.bio,
-        city: req.body.city
+        city: req.body.city,
+        expanded: req.body.expanded
     }
 
     const ref = dbService.getDataBase().collection('users').doc(req.body.email);
@@ -44,7 +45,8 @@ router.put('/', async (req, res) => {
       password: req.body.password,
       bio: req.body.bio,
       city: req.body.city,
-      instruments: req.body.instruments
+      instruments: req.body.instruments,
+      expanded: req.body.expanded
     }, { merge: true })
 
     const ref = dbService.getDataBase().collection('users').doc(req.body.email);
