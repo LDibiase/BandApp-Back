@@ -29,7 +29,7 @@ router.post('/', async (req, res) => {
     if (result != null) {
       res.statusCode = 401;
     } else {
-      dbService.getDataBase().collection('users').doc(req.body.email).set(usr);
+      await dbService.getDataBase().collection('users').doc(req.body.email).set(usr);
       userRef = dbService.getDataBase().collection('users').doc(req.body.email);
       const newUser = await getUserByEmail(userRef);
       res.json(newUser);
@@ -40,7 +40,7 @@ router.post('/', async (req, res) => {
 router.put('/', async (req, res) => {
     
     const userRef = dbService.getDataBase().collection('users').doc(req.body.email);
-    userRef.set({
+    await userRef.set({
       firstname: req.body.firstname,
       password: req.body.password,
       bio: req.body.bio,
